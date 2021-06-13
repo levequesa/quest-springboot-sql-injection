@@ -1,8 +1,9 @@
 package com.bankzecure.webapp.repository;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.Connection;
-import java.sql.Statement;
+//import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,16 +18,21 @@ public class CreditCardRepository {
 
   public List<CreditCard> findByCustomerIdentifier(final String identifier) {
     Connection connection = null;
-    Statement statement = null;
+//    Statement statement = null;
+    PreparedStatement request = null;
     ResultSet resultSet = null;
-    final String query = "SELECT cc.* FROM credit_card cc " +
-      "JOIN customer c ON cc.customer_id = c.id " +
-      "WHERE c.identifier = '" + identifier + "'";
+    
+//    final String query = "SELECT cc.* FROM credit_card cc " +
+//      "JOIN customer c ON cc.customer_id = c.id " +
+//      "WHERE c.identifier = '" + identifier + "'";
     try {
       connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-      statement = connection.createStatement();
-      resultSet = statement.executeQuery(query);
-
+//      statement = connection.createStatement();
+//      resultSet = statement.executeQuery(query);
+      request = connection.prepareStatement("SELECT cc.* FROM credit_card cc JOIN customer c ON cc.customer_id = c.id WHERE c.identifier =?");
+      request.setString(1, identifier);
+      resultSet = request.executeQuery();
+      
       final List<CreditCard> creditCards = new ArrayList<CreditCard>();
 
       while (resultSet.next()) {
@@ -44,7 +50,8 @@ public class CreditCardRepository {
       e.printStackTrace();
     } finally {
       JdbcUtils.closeResultSet(resultSet);
-      JdbcUtils.closeStatement(statement);
+//      JdbcUtils.closeStatement(statement);
+      JdbcUtils.closeStatement(request);
       JdbcUtils.closeConnection(connection);
     }
     return null;

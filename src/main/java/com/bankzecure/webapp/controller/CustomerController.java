@@ -21,7 +21,7 @@ public class CustomerController {
   }
 
   @PostMapping("/customers/authenticate")
-  String login(Model model, @RequestParam String identifier, @RequestParam String password) {
+  String login(Model model, @RequestParam String identifier, @RequestParam String password) throws Exception {
     Customer customer = repository.findByIdentifierAndPassword(identifier, password);
     model.addAttribute("customer", customer);
     return "profile";
